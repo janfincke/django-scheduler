@@ -160,7 +160,8 @@ class Calendar(models.Model):
         if Inheritable is set to true this relation will cascade to all events
         related to this calendar.
         """
-        CalendarRelation.objects.create_relation(self, obj, distinction, inheritable)
+        CalendarRelation.objects.create_relation(
+            self, obj, distinction, inheritable)
 
     def get_recent(self, amount=5):
         """
@@ -233,7 +234,7 @@ class CalendarRelation(models.Model):
         verbose_name_plural = _("calendar relations")
         indexes = [
             models.Index(fields=["content_type", "object_id"])
-            ]
+        ]
 
     def __str__(self):
         return "{} - {}".format(self.calendar, self.content_object)

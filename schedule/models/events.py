@@ -94,7 +94,7 @@ class Event(models.Model):
         verbose_name_plural = _("events")
         indexes = [
             models.Index(fields=["start", "end"])
-            ]
+        ]
 
     def __str__(self):
         return gettext("%(title)s: %(start)s - %(end)s") % {
@@ -178,7 +178,8 @@ class Event(models.Model):
                 final_occurrences.append(occ)
         # then add persisted occurrences which originated outside of this period but now
         # fall within it
-        final_occurrences += occ_replacer.get_additional_occurrences(start, end)
+        final_occurrences += occ_replacer.get_additional_occurrences(
+            start, end)
         return final_occurrences
 
     def get_rrule_object(self, tzinfo):
@@ -196,7 +197,8 @@ class Event(models.Model):
         elif timezone.is_naive(self.end_recurring_period):
             until = self.end_recurring_period
         else:
-            until = self.end_recurring_period.astimezone(tzinfo).replace(tzinfo=None)
+            until = self.end_recurring_period.astimezone(
+                tzinfo).replace(tzinfo=None)
 
         return rrule.rrule(frequency, dtstart=dtstart, until=until, **params)
 
@@ -219,7 +221,8 @@ class Event(models.Model):
             next_occurrence = rule.after(
                 date.astimezone(tzinfo).replace(tzinfo=None), inc=True
             )
-            next_occurrence = pytz.timezone(str(tzinfo)).localize(next_occurrence)
+            next_occurrence = pytz.timezone(
+                str(tzinfo)).localize(next_occurrence)
         else:
             next_occurrence = self.start
         if next_occurrence == date:
@@ -227,7 +230,8 @@ class Event(models.Model):
                 return Occurrence.objects.get(event=self, original_start=date)
             except Occurrence.DoesNotExist:
                 if use_naive:
-                    next_occurrence = timezone.make_naive(next_occurrence, tzinfo)
+                    next_occurrence = timezone.make_naive(
+                        next_occurrence, tzinfo)
                 return self._create_occurrence(next_occurrence)
 
     def _get_occurrence_list(self, start, end):
@@ -375,7 +379,8 @@ class Event(models.Model):
             ):
                 sp = start_params[param]
                 if sp == rule_params[param] or (
-                    hasattr(rule_params[param], "__iter__") and sp in rule_params[param]
+                    hasattr(rule_params[param],
+                            "__iter__") and sp in rule_params[param]
                 ):
                     event_params[param] = [sp]
                 else:
@@ -562,7 +567,8 @@ class EventRelation(models.Model):
     may not scale well.  If you use this keep that in mind.
     """
 
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, verbose_name=_("event"))
+    event = models.ForeignKey(
+        Event, on_delete=models.CASCADE, verbose_name=_("event"))
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.IntegerField(db_index=True)
     content_object = fields.GenericForeignKey("content_type", "object_id")
@@ -584,7 +590,8 @@ class EventRelation(models.Model):
 
 
 class Occurrence(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, verbose_name=_("event"))
+    event = models.ForeignKey(
+        Event, on_delete=models.CASCADE, verbose_name=_("event"))
     title = models.CharField(_("title"), max_length=255, blank=True)
     description = models.TextField(_("description"), blank=True)
     start = models.DateTimeField(_("start"), db_index=True)
@@ -708,7 +715,8 @@ class Occurrence(models.Model):
 
     def __hash__(self):
         if not self.pk:
-            raise TypeError("Model instances without primary key value are unhashable")
+            raise TypeError(
+                "Model instances without primary key value are unhashable")
         return hash(self.pk)
 
     def __eq__(self, other):
